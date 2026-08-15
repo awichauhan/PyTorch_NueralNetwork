@@ -78,9 +78,10 @@ def main():
                 "| Loss:", loss.item()
             )
 
-    with torch.no_grad():  # not tracking the gradient updates in tensors X
-        probabilities = model(X)   # getting A3 output
-        predictions = (probabilities >= 0.5).float()
+    with torch.no_grad():
+        logits = model(X)  # saving raw logits from ReLU
+        probabilities = torch.sigmoid(logits)  # applying sigmoid and storing it in prediction
+        predictions = (probabilities >= 0.5).float()   # then making prediction
 
     print("\nFinal probabilities:")
     print(probabilities)
