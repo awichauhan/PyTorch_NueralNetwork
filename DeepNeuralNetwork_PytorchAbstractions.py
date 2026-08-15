@@ -1,0 +1,99 @@
+import torch
+import torch.nn as nn
+
+
+X = torch.tensor([
+    [0.0, 0.0],
+    [0.0, 1.0],
+    [1.0, 0.0],
+    [1.0, 1.0]
+])
+
+Y = torch.tensor([
+    [0.0],
+    [1.0],
+    [1.0],
+    [1.0]
+])
+
+
+class DeepNeuralNetwork(nn.Module):  # base class used to define an entire neural network structure
+    def __init__(self):   # need to understand from python concept level
+        super().__init__()
+
+        self.layer1 = nn.Linear(2, 4)      # defines W & B and performs forward pass (Z = W.X + B)
+        self.layer2 = nn.Linear(4, 3)  # 4 input features and 3 output neurons is basically W.shape = (3,4) and B.shape = (3,)
+        self.output_layer = nn.Linear(3, 1)
+
+    def forward(self, X):
+
+        Z1 = self.layer1(X)   # defined W and B and performed forward calculation
+        A1 = torch.sigmoid(Z1)
+
+        Z2 = self.layer2(A1)
+        A2 = torch.sigmoid(Z2)
+
+        Z3 = self.output_layer(A2)
+        A3 = torch.sigmoid(Z3)
+
+        return A3
+
+def main():
+    model = DeepNeuralNetwork()    # created object of deep-neural network clacc
+    criterion = nn.BCELoss()  # created object of BCELoss class
+    optimizer = torch.optim.SGD (model.parameters(), lr=0.1)   # created object of in-built gradient descent optimizer class
+
+    """
+    model.parameters() = all trainable weights and biases in the model
+    lr=0.1 = learning rate
+    SGD = Stochastic Gradient Descent
+    """
+
+    epochs = 5000
+
+    for epoch in range(epochs):
+
+        prediction = model(X)   #forward propagation (storing A3 inside prediction)
+        loss = criterion(prediction, Y)   # passed prediction and Y to criterion object
+        optimizer.zero_grad()   # function for clearing gradients parameters (weights and bias)
+        loss.backward()   # gradient calculation
+        optimizer.step()   # update parameters ; uses those gradients to update parameters.
+
+        if epoch % 500 == 0:
+            print(
+                "Epoch:", epoch,
+                "| Loss:", loss.item()
+            )
+
+    with torch.no_grad():  # not tracking the gradient updates in tensors X
+        probabilities = model(X)   # getting A3 output
+        predictions = (probabilities >= 0.5).float()
+
+    print("\nFinal probabilities:")
+    print(probabilities)
+
+    print("\nPredicted classes:")
+    print(predictions)
+
+    print("\nActual classes:")
+    print(Y)
+
+    print("\nLayer 1 Weights:")
+    print(model.layer1.weight)
+
+    print("\nLayer 1 Bias:")
+    print(model.layer1.bias)
+
+    print("\nLayer 2 Weights:")
+    print(model.layer2.weight)
+
+    print("\nLayer 2 Bias:")
+    print(model.layer2.bias)
+
+    print("\nOutput Layer Weights:")
+    print(model.output_layer.weight)
+
+    print("\nOutput Layer Bias:")
+    print(model.output_layer.bias)
+
+main()
