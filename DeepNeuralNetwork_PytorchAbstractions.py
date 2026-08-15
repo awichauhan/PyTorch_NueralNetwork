@@ -9,7 +9,7 @@ X = torch.tensor([
     [1.0, 1.0]
 ])
 
-Y = torch.tensor([
+Y = torch.tensor([    # OR table; OR is linearly separable
     [0.0],
     [1.0],
     [1.0],
