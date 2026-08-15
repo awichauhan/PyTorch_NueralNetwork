@@ -60,7 +60,7 @@ for epoch in range(epochs):
     # 4. Update parameters
     # --------------------------------
 
-    with torch.no_grad():
+    with torch.no_grad():  # don't track the parameter update as another computation graph in W or B tensors
 
         W2 -= learning_rate * W2.grad
         B2 -= learning_rate * B2.grad
@@ -73,7 +73,7 @@ for epoch in range(epochs):
     # 5. Clear old gradients
     # --------------------------------
 
-    W1.grad.zero_()
+    W1.grad.zero_()  # clear old gradients so pytorch doesnt accumulate gradient value before next iteration
     B1.grad.zero_()
     W2.grad.zero_()
     B2.grad.zero_()
